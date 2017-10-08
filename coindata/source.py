@@ -8,6 +8,18 @@ from decimal import Decimal
 _ONE_DAY = timedelta(days=1)
 
 
+def get_source(source_name):
+    constructor = {
+        "btc": lambda: BTCPrice(),
+        "eth": lambda: ETHPrice()
+    }.get(source_name.lower())
+
+    if constructor:
+        return constructor()
+    else:
+        raise Exception("No market is present for " + source_name)
+
+
 class Source(object):
     __metaclass__ = abc.ABCMeta
 
@@ -58,8 +70,8 @@ class ETHPrice(Source):
             self._data[day] = round(Decimal(sum([Decimal(str(d['usd'])) for d in for_day])) / Decimal(len(for_day)), 2)
             idx += len(for_day)
 
-    def price(self, date):
-        return self._data.get(datetime(date.year, date.month, date.day))
+    def price(self, d):
+        return self._data.get(datetime(d.year, d.month, d.day))
 
 
 class BTCPrice(Source):
@@ -70,8 +82,8 @@ class BTCPrice(Source):
                           "https://api.coindesk.com/v1/bpi/historical/close.json?start=2010-07-17&end={}"
                               .format(datetime.strftime(now, "%Y-%m-%d")))['bpi'].items()}
 
-    def price(self, date):
-        return self._data.get(datetime(date.year, date.month, date.day))
+    def price(self, d):
+        return self._data.get(datetime(d.year, d.month, d.day))
 
 
 def json_query_utf_8(url, headers=None):
