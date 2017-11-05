@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='coindata',
-      version='0.0.1',
+      version='0.0.2',
       description='Stream coin price data over some date range.',
       author='Matthew Downey',
       author_email='matthewdowney20@gmail.com',
